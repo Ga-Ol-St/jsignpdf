@@ -66,6 +66,7 @@ public class BasicSignerOptions {
 	private char[] keyPasswd;
 	private String inFile;
 	private String outFile;
+	private String tmpFile;
 	private String reason;
 	private String location;
 	private String contact;
@@ -388,6 +389,14 @@ public class BasicSignerOptions {
 
 	public String getOutFile() {
 		return outFile;
+	}
+
+	public String getTmpFile() {
+		return tmpFile;
+	}
+
+	public void setTmpFile(final String tmpFile) {
+		this.tmpFile = tmpFile;
 	}
 
 	/**

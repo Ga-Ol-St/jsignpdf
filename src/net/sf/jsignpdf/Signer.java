@@ -255,10 +255,14 @@ public class Signer {
 					tmpSuffix = StringUtils.right(tmpNameBase, 4);
 					tmpNameBase = StringUtils.left(tmpNameBase, tmpNameBase.length() - 4);
 				}
-				final StringBuilder tmpName = new StringBuilder(anOpts.getOutPath());
-				tmpName.append(anOpts.getOutPrefix());
-				tmpName.append(tmpNameBase).append(anOpts.getOutSuffix()).append(tmpSuffix);
-				anOpts.setOutFile(tmpName.toString());
+
+				if (anOpts.getOutFile() == null) {
+					final StringBuilder tmpName = new StringBuilder(anOpts.getOutPath());
+					tmpName.append(anOpts.getOutPrefix());
+					tmpName.append(tmpNameBase).append(anOpts.getOutSuffix()).append(tmpSuffix);
+					anOpts.setOutFile(tmpName.toString());
+				}
+
 				if (tmpLogic.signFile()) {
 					successCount++;
 				} else {

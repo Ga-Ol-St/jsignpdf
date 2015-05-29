@@ -120,7 +120,9 @@ public class SignerLogic implements Runnable {
 	 * @return true when signing is finished succesfully, false otherwise
 	 */
 	public boolean signFile() {
-		final String outFile = options.getOutFileX();
+		File ftmp = options.getTmpFile() == null ? null : new File(options.getTmpFile());
+		final String outFile = ( ftmp==null || ftmp.isDirectory() ) ? options.getOutFileX() : ftmp.getPath();
+
 		if (!validateInOutFiles(options.getInFile(), outFile)) {
 			LOGGER.info(RES.get("console.skippingSigning"));
 			return false;
@@ -153,9 +155,12 @@ public class SignerLogic implements Runnable {
 				}
 			}
 
-			LOGGER.info(RES.get("console.createOutPdf", outFile));
-			fout = new FileOutputStream(outFile);
+			if (ftmp == null || ftmp.isDirectory())
+				fout = new FileOutputStream(outFile);
 
+				
+			LOGGER.info(RES.get("console.createOutPdf", outFile));
+			
 			final HashAlgorithm hashAlgorithm = options.getHashAlgorithmX();
 
 			LOGGER.info(RES.get("console.createSignature"));
@@ -175,7 +180,7 @@ public class SignerLogic implements Runnable {
 						String.valueOf(tmpPdfVersion) }));
 			}
 
-			final PdfStamper stp = PdfStamper.createSignature(reader, fout, tmpPdfVersion, null, options.isAppendX());
+			final PdfStamper stp = PdfStamper.createSignature(reader, fout, tmpPdfVersion, ftmp, options.isAppendX());
 			if (!options.isAppendX()) {
 				// we are not in append mode, let's remove existing signatures
 				// (otherwise we're getting to troubles)
@@ -398,8 +403,6 @@ public class SignerLogic implements Runnable {
 			dic2.put(PdfName.CONTENTS, new PdfString(paddedSig).setHexWriting(true));
 			LOGGER.info(RES.get("console.closeStream"));
 			sap.close(dic2);
-			fout.close();
-			fout = null;
 			finished = true;
 		} catch (Exception e) {
 			LOGGER.error(RES.get("console.exception"), e);

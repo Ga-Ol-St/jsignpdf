@@ -130,6 +130,10 @@ public class SignerOptionsFromCmdLine extends BasicSignerOptions {
 			setKeyPasswd(line.getOptionValue(ARG_KEY_PWD));
 		if (line.hasOption(ARG_OUTPATH))
 			setOutPath(line.getOptionValue(ARG_OUTPATH));
+		if (line.hasOption(ARG_OUT_FILE))
+			setOutFile(line.getOptionValue(ARG_OUT_FILE));
+		if (line.hasOption(ARG_TMP_PATH))
+			setTmpFile(line.getOptionValue(ARG_TMP_PATH));
 		if (line.hasOption(ARG_OPREFIX))
 			setOutPrefix(line.getOptionValue(ARG_OPREFIX));
 		if (line.hasOption(ARG_OSUFFIX))
@@ -301,9 +305,12 @@ public class SignerOptionsFromCmdLine extends BasicSignerOptions {
 				.withType(Number.class).withArgName("index").create(ARG_KEY_INDEX));
 		OPTS.addOption(OptionBuilder.withLongOpt(ARG_KEY_PWD_LONG).withDescription(RES.get("hlp.keyPwd")).hasArg()
 				.withArgName("password").create(ARG_KEY_PWD));
-
 		OPTS.addOption(OptionBuilder.withLongOpt(ARG_OUTPATH_LONG).withDescription(RES.get("hlp.outPath")).hasArg()
-				.withArgName("path").create(ARG_OUTPATH));
+				.withArgName("path or file").create(ARG_OUTPATH));
+		OPTS.addOption(OptionBuilder.withLongOpt(ARG_OUT_FILE_LONG).withDescription(RES.get("hlp.outFile")).hasArg()
+				.withArgName("file").create(ARG_OUT_FILE));
+		OPTS.addOption(OptionBuilder.withLongOpt(ARG_TMP_PATH_LONG).withDescription(RES.get("hlp.tmpPath")).hasArg()
+				.withArgName("path or file").create(ARG_TMP_PATH));
 		OPTS.addOption(OptionBuilder.withLongOpt(ARG_OPREFIX_LONG).withDescription(RES.get("hlp.outPrefix")).hasArg()
 				.withArgName("prefix").create(ARG_OPREFIX));
 		OPTS.addOption(OptionBuilder.withLongOpt(ARG_OSUFFIX_LONG).withDescription(RES.get("hlp.outSuffix")).hasArg()
@@ -589,5 +596,14 @@ public class SignerOptionsFromCmdLine extends BasicSignerOptions {
 	public void setOutPath(String outPath) {
 		this.outPath = outPath;
 	}
+
+
+//	public String getSignedFile() {
+//		return signedFile;
+//	}
+//	
+//	public void setSignedFile(final String signedFile) {
+//		this.signedFile = signedFile;
+//	}
 
 }
