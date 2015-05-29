@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.io.Console;
 
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -136,6 +137,23 @@ public class Signer {
 			}
 			if (ArrayUtils.isNotEmpty(tmpOpts.getFiles())
 					|| (!StringUtils.isEmpty(tmpOpts.getInFile()) && !StringUtils.isEmpty(tmpOpts.getOutFile()))) {
+
+				if (tmpOpts.getKsPasswdStr().isEmpty()) {
+
+					System.out.print(RES.get("console.password_prompt"));
+					char[] keyPasswd = null;
+					if (System.console() != null)
+						keyPasswd = System.console().readPassword();
+					else
+						try {
+							keyPasswd = (new java.io.BufferedReader(new java.io.InputStreamReader(System.in))).readLine().toCharArray();
+						}
+						catch (Exception e)
+						{
+						} 
+					tmpOpts.setKsPasswd(keyPasswd);
+				}
+
 				signFiles(tmpOpts);
 			} else {
 				final boolean tmpCommand = tmpOpts.isPrintVersion() || tmpOpts.isPrintHelp()
