@@ -114,9 +114,11 @@ public class Signer {
 		if (tmpOpts != null) {
 			if (tmpOpts.isPrintVersion()) {
 				System.out.println("JSignPdf version " + VERSION);
+				return;
 			}
 			if (tmpOpts.isPrintHelp()) {
 				printHelp();
+				return;
 			}
 			if (tmpOpts.isListKeyStores()) {
 				LOGGER.info(RES.get("console.keystores"));
