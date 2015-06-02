@@ -134,7 +134,7 @@ public final class JSignPdf extends WeakBase implements com.sun.star.lang.XServi
 				} catch (Exception e) {
 					System.err.println("Can't set Look&Feel.");
 				}
-				final SignPdfForm tmpForm = new SignPdfForm(WindowConstants.DISPOSE_ON_CLOSE);
+				final SignPdfForm tmpForm = new SignPdfForm(WindowConstants.DISPOSE_ON_CLOSE, null);
 				tmpForm.pack();
 				tmpForm.setVisible(true);
 				return;

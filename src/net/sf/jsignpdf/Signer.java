@@ -126,6 +126,7 @@ public class Signer {
 				for (String tmpKsType : KeyStoreUtils.getKeyStores()) {
 					System.out.println(tmpKsType);
 				}
+				return;
 			}
 			if (tmpOpts.isListKeys()) {
 				final String[] tmpKeyAliases = KeyStoreUtils.getKeyAliases(tmpOpts);
@@ -134,6 +135,7 @@ public class Signer {
 				for (String tmpCert : tmpKeyAliases) {
 					System.out.println(tmpCert);
 				}
+				return;
 			}
 			if (ArrayUtils.isNotEmpty(tmpOpts.getFiles())
 					|| (!StringUtils.isEmpty(tmpOpts.getInFile()) && !StringUtils.isEmpty(tmpOpts.getOutFile()))) {
@@ -155,28 +157,20 @@ public class Signer {
 				}
 
 				signFiles(tmpOpts);
-			} else {
-				final boolean tmpCommand = tmpOpts.isPrintVersion() || tmpOpts.isPrintHelp()
-						|| tmpOpts.isListKeyStores() || tmpOpts.isListKeys();
-				if (!tmpCommand) {
-					// no valid command provided - print help and exit
-					printHelp();
-					exit(EXIT_CODE_NO_COMMAND);
-				}
+				return;
 			}
-			exit(0);
-		} else {
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (Exception e) {
-				System.err.println("Can't set Look&Feel.");
-			}
-			SignPdfForm tmpForm = new SignPdfForm(WindowConstants.EXIT_ON_CLOSE);
-			tmpForm.pack();
-			GuiUtils.center(tmpForm);
-			tmpForm.setVisible(true);
 		}
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			System.err.println("Can't set Look&Feel.");
+		}
+		SignPdfForm tmpForm = new SignPdfForm(WindowConstants.EXIT_ON_CLOSE, tmpOpts);
+		tmpForm.pack();
+		GuiUtils.center(tmpForm);
+		tmpForm.setVisible(true);
 	}
+
 
 	/**
 	 * Writes info about security providers to the {@link Logger} instance. The
