@@ -123,6 +123,8 @@ public class BasicSignerOptions {
 	private boolean ocspEnabled;
 	private String ocspServerUrl;
 	private boolean crlEnabled;
+	private String  crlCache;
+	private long    crlCacheTime;
 
 	// Proxy connection
 	private Proxy.Type proxyType;
@@ -1123,6 +1125,22 @@ public class BasicSignerOptions {
 		this.crlEnabled = crlEnabled;
 	}
 
+	public void setCrlCache(final String crlCache) {
+		this.crlCache = crlCache;
+	}
+
+	public String getCrlCache() {
+		return crlCache;
+	}
+
+	public void setCrlCacheTime(final long crlCacheTime) {
+		this.crlCacheTime = crlCacheTime;
+	}
+
+	public long getCrlCacheTime() {
+		return crlCacheTime;
+	}
+	
 	public HashAlgorithm getHashAlgorithm() {
 		if (hashAlgorithm == null) {
 			hashAlgorithm = Constants.DEFVAL_HASH_ALGORITHM;

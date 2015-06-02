@@ -233,6 +233,10 @@ public class SignerOptionsFromCmdLine extends BasicSignerOptions {
 			setOcspServerUrl(line.getOptionValue(ARG_OCSP_SERVER_LONG));
 		if (line.hasOption(ARG_CRL_LONG))
 			setCrlEnabled(true);
+		if (line.hasOption(ARG_CRL_CASHE_LONG))
+			setCrlCache(line.getOptionValue(ARG_CRL_CASHE_LONG));
+		if (line.hasOption(ARG_CRL_CASHE_TIME_LONG))
+			setCrlCacheTime(getInt(line.getOptionValue(ARG_CRL_CASHE_TIME_LONG),24));
 
 		if (line.hasOption(ARG_PROXY_TYPE_LONG))
 			setProxyType(line.getOptionValue(ARG_PROXY_TYPE_LONG));
@@ -429,6 +433,10 @@ public class SignerOptionsFromCmdLine extends BasicSignerOptions {
 				.create());
 
 		OPTS.addOption(OptionBuilder.withLongOpt(ARG_CRL_LONG).withDescription(RES.get("hlp.crl")).create());
+		OPTS.addOption(OptionBuilder.withLongOpt(ARG_CRL_CASHE_LONG).withDescription(RES.get("hlp.crlCache")).hasArg()
+				.withArgName("folder").create());
+		OPTS.addOption(OptionBuilder.withLongOpt(ARG_CRL_CASHE_TIME_LONG).withDescription(RES.get("hlp.crlCacheTime")).hasArg()
+				.withArgName("hours").create());
 
 		OPTS.addOption(OptionBuilder
 				.withDescription(RES.get("hlp.proxyType", DEFVAL_PROXY_TYPE.name(), getEnumValues(Proxy.Type.values())))
@@ -596,14 +604,5 @@ public class SignerOptionsFromCmdLine extends BasicSignerOptions {
 	public void setOutPath(String outPath) {
 		this.outPath = outPath;
 	}
-
-
-//	public String getSignedFile() {
-//		return signedFile;
-//	}
-//	
-//	public void setSignedFile(final String signedFile) {
-//		this.signedFile = signedFile;
-//	}
 
 }

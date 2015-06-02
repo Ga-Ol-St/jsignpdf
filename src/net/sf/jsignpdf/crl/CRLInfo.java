@@ -42,11 +42,17 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.Set;
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Date;
 
 import net.sf.jsignpdf.BasicSignerOptions;
 import net.sf.jsignpdf.Constants;
 
 import org.apache.commons.io.input.CountingInputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.DERString;
 import org.bouncycastle.asn1.x509.CRLDistPoint;
@@ -108,6 +114,29 @@ public class CRLInfo {
     return byteCount;
   }
 
+
+  private FileInputStream getCrlStream(String urlStr) throws FileNotFoundException
+  {
+    File cache = new File(options.getCrlCache()+"/"+urlStr.replaceAll("[:/]", "_")+".crl"); 
+    long age = ((new Date()).getTime() - cache.lastModified())/1000/3600;
+
+  	if (age >= options.getCrlCacheTime()) {
+  		LOGGER.info(RES.get("console.crlinfo.loadCrl", urlStr));
+  		try {
+  			File tmpFile = new File(cache.getPath()+".tmp");
+  			FileUtils.copyURLToFile(new URL(urlStr),tmpFile,5000,10000);
+  			tmpFile.renameTo(cache);
+  		} catch (IOException e) {
+  			LOGGER.warn("", e);
+  		}
+  	}else {
+  		LOGGER.info(RES.get("console.crlinfo.loadCrlCache", urlStr));
+  	}
+
+  	return new FileInputStream(cache);
+  }
+
+
   /**
    * Initialize CRLs (load URLs from certificates and download the CRLs).
  * @throws Exception 
@@ -125,13 +154,24 @@ public class CRLInfo {
     }
     final Set<CRL> crlSet = new HashSet<CRL>();
     for (final String urlStr : urls) {
-      LOGGER.info(RES.get("console.crlinfo.loadCrl", urlStr));
-      final URL tmpUrl = new URL(urlStr);
-      final CountingInputStream inStream = new CountingInputStream(tmpUrl.openConnection(options.createProxy())
-          .getInputStream());
+	  InputStream inStream = null;
+	  long tmpBytesRead = 0;
+
+      if (options.getCrlCache() != null) {
+  	    inStream = getCrlStream(urlStr);
+  	    tmpBytesRead = inStream.available();
+      } else {
+        LOGGER.info(RES.get("console.crlinfo.loadCrl", urlStr));
+        final URL tmpUrl = new URL(urlStr);
+	    inStream = new CountingInputStream(tmpUrl.openConnection(options.createProxy()).getInputStream());
+	  }
+
       final CertificateFactory cf = CertificateFactory.getInstance(Constants.CERT_TYPE_X509);
       final CRL crl = cf.generateCRL(inStream);
-      final long tmpBytesRead = inStream.getByteCount();
+
+	  if (inStream instanceof CountingInputStream)
+	    tmpBytesRead = ((CountingInputStream)inStream).getByteCount();
+
       LOGGER.info(RES.get("console.crlinfo.crlSize", String.valueOf(tmpBytesRead)));
       if (!crlSet.contains(crl)) {
         byteCount += tmpBytesRead;

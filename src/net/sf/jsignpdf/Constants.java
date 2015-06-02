@@ -373,6 +373,8 @@ public class Constants {
 	public static final String ARG_OCSP_LONG = "ocsp";
 	public static final String ARG_OCSP_SERVER_LONG = "ocsp-server-url";
 	public static final String ARG_CRL_LONG = "crl";
+	public static final String ARG_CRL_CASHE_LONG = "crl-cache";
+	public static final String ARG_CRL_CASHE_TIME_LONG = "crl-cache-time";
 
 	public static final String ARG_PROXY_TYPE_LONG = "proxy-type";
 	public static final String ARG_PROXY_HOST_LONG = "proxy-host";
