@@ -53,6 +53,7 @@ import net.sf.jsignpdf.Constants;
 
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.DERString;
 import org.bouncycastle.asn1.x509.CRLDistPoint;
@@ -62,6 +63,8 @@ import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.X509Extension;
 import org.bouncycastle.x509.extension.X509ExtensionUtil;
+
+import sun.security.x509.X509CRLImpl;
 
 /**
  * Helper bean for holding CRL related data.
@@ -118,7 +121,7 @@ public class CRLInfo {
   private FileInputStream getCrlStream(String urlStr) throws FileNotFoundException
   {
     File cache = new File(options.getCrlCache()+"/"+urlStr.replaceAll("[:/]", "_")+".crl"); 
-    long age = ((new Date()).getTime() - cache.lastModified())/1000/3600;
+    long age = (System.currentTimeMillis() - cache.lastModified())/1000/3600;
 
   	if (age >= options.getCrlCacheTime()) {
   		LOGGER.info(RES.get("console.crlinfo.loadCrl", urlStr));
@@ -168,6 +171,11 @@ public class CRLInfo {
 
       final CertificateFactory cf = CertificateFactory.getInstance(Constants.CERT_TYPE_X509);
       final CRL crl = cf.generateCRL(inStream);
+
+	  long msec_till_update = ( ((X509CRLImpl)crl).getNextUpdate().getTime() - System.currentTimeMillis());
+
+      if (msec_till_update < 3600 * 1000)
+    	  throw new CRLException("CRL expires in less than hour");
 
 	  if (inStream instanceof CountingInputStream)
 	    tmpBytesRead = ((CountingInputStream)inStream).getByteCount();
