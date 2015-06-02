@@ -90,8 +90,9 @@ public class CRLInfo {
    * Returns CRLs for the certificate chain.
    * 
    * @return
+ * @throws Exception 
    */
-  public CRL[] getCrls() {
+  public CRL[] getCrls() throws Exception {
     initCrls();
     return crls;
   }
@@ -100,16 +101,18 @@ public class CRLInfo {
    * Returns byte count, which should
    * 
    * @return
+ * @throws Exception 
    */
-  public long getByteCount() {
+  public long getByteCount() throws Exception {
     initCrls();
     return byteCount;
   }
 
   /**
    * Initialize CRLs (load URLs from certificates and download the CRLs).
+ * @throws Exception 
    */
-  private void initCrls() {
+  private void initCrls() throws Exception {
     if (!options.isCrlEnabledX() || crls != null) {
       return;
     }
@@ -122,31 +125,21 @@ public class CRLInfo {
     }
     final Set<CRL> crlSet = new HashSet<CRL>();
     for (final String urlStr : urls) {
-      try {
-        LOGGER.info(RES.get("console.crlinfo.loadCrl", urlStr));
-        final URL tmpUrl = new URL(urlStr);
-        final CountingInputStream inStream = new CountingInputStream(tmpUrl.openConnection(options.createProxy())
-            .getInputStream());
-        final CertificateFactory cf = CertificateFactory.getInstance(Constants.CERT_TYPE_X509);
-        final CRL crl = cf.generateCRL(inStream);
-        final long tmpBytesRead = inStream.getByteCount();
-        LOGGER.info(RES.get("console.crlinfo.crlSize", String.valueOf(tmpBytesRead)));
-        if (!crlSet.contains(crl)) {
-          byteCount += tmpBytesRead;
-          crlSet.add(crl);
-        } else {
-          LOGGER.info(RES.get("console.crlinfo.alreadyLoaded"));
-        }
-        inStream.close();
-      } catch (MalformedURLException e) {
-        LOGGER.warn("", e);
-      } catch (IOException e) {
-        LOGGER.warn("", e);
-      } catch (CertificateException e) {
-        LOGGER.warn("", e);
-      } catch (CRLException e) {
-        LOGGER.warn("", e);
+      LOGGER.info(RES.get("console.crlinfo.loadCrl", urlStr));
+      final URL tmpUrl = new URL(urlStr);
+      final CountingInputStream inStream = new CountingInputStream(tmpUrl.openConnection(options.createProxy())
+          .getInputStream());
+      final CertificateFactory cf = CertificateFactory.getInstance(Constants.CERT_TYPE_X509);
+      final CRL crl = cf.generateCRL(inStream);
+      final long tmpBytesRead = inStream.getByteCount();
+      LOGGER.info(RES.get("console.crlinfo.crlSize", String.valueOf(tmpBytesRead)));
+      if (!crlSet.contains(crl)) {
+        byteCount += tmpBytesRead;
+        crlSet.add(crl);
+      } else {
+        LOGGER.info(RES.get("console.crlinfo.alreadyLoaded"));
       }
+      inStream.close();
     }
     crls = crlSet.toArray(new CRL[crlSet.size()]);
   }
